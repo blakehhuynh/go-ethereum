@@ -726,6 +726,8 @@ func (b *SimulatedBackend) SendTransaction(ctx context.Context, tx *types.Transa
 	b.stuckTransactions = remainingTxes
 
 	b.pendingReceipts = receipts[0]
+	b.stuckTransactions = remainingTxes
+
 	return nil
 }
 
