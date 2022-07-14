@@ -109,7 +109,7 @@ func (b *SimulatedBackend) Close() error {
 
 // Commit imports all the pending transactions as a single block and starts a
 // fresh new state.
-func (b *SimulatedBackend) Commit() {
+func (b *SimulatedBackend) Commit() common.Hash {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
@@ -131,10 +131,14 @@ func (b *SimulatedBackend) Commit() {
 	if _, err := b.blockchain.InsertChain([]*types.Block{blocks[0]}); err != nil {
 		panic(err) // This cannot happen unless the simulator is wrong, fail in that case
 	}
+	blockHash := b.pendingBlock.Hash()
+
 	// Using the last inserted block here makes it possible to build on a side
 	// chain after a fork.
 	b.stuckTransactions = remainingTx
 	b.rollback(blocks[0])
+
+	return blockHash
 }
 
 // Rollback aborts all pending transactions, reverting to the last committed state.
